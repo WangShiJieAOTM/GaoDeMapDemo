@@ -14,6 +14,7 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.MapView;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -26,8 +27,10 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
     public AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption = null;
-    //内容
-    private TextView tvContent;
+
+    //地图显示
+    private MapView mapView;
+
 
     /**
      * 动态请求权限
@@ -117,10 +120,12 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        tvContent = findViewById(R.id.tv_content);
-
         AMapLocationClient.updatePrivacyShow(this,true,true);
         AMapLocationClient.updatePrivacyAgree(this,true);
+
+        mapView = findViewById(R.id.map_view);
+        //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState),创建地图
+        mapView.onCreate(savedInstanceState);
         //初始化定位
         try {
             initLocation();
@@ -129,6 +134,15 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         }
         //检查Android版本
         checkingAndroidVersion();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //销毁定位客户端，同时销毁本地定位服务。
+        mLocationClient.onDestroy();
+        //销毁地图
+        mapView.onDestroy();
     }
 
     /**
@@ -142,7 +156,11 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
             if (aMapLocation.getErrorCode() == 0) {
                 //地址
                 String address = aMapLocation.getAddress();
-                tvContent.setText(address == null ? "无地址" : address);
+                Log.d("MainActivity",address);
+                showMsg(address);
+
+                //停止定位后,本地定位服务不会被销毁
+                mLocationClient.stopLocation();
             } else {
                 //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 Log.e("AmapError", "location Error, ErrCode:"
@@ -151,4 +169,24 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
             }
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
+        mapView.onResume();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
+        mapView.onPause();
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
+        mapView.onSaveInstanceState(outState);
+    }
+    
 }
