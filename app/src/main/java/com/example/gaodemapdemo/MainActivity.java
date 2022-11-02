@@ -14,12 +14,14 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements AMapLocationListener {
+public class MainActivity extends AppCompatActivity implements AMapLocationListener, LocationSource {
 
     //请求权限码
     private static final int REQUEST_PERMISSIONS = 9527;
@@ -27,9 +29,12 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
     public AMapLocationClient mLocationClient = null;
     //声明AMapLocationClientOption对象
     public AMapLocationClientOption mLocationOption = null;
-
     //地图显示
     private MapView mapView;
+    //地图控制器
+    private AMap aMap = null;
+    //位置更改监听
+    private OnLocationChangedListener mListener;
 
 
     /**
@@ -120,18 +125,17 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AMapLocationClient.updatePrivacyShow(this,true,true);
-        AMapLocationClient.updatePrivacyAgree(this,true);
+        AMapLocationClient.updatePrivacyShow(this, true, true);
+        AMapLocationClient.updatePrivacyAgree(this, true);
 
-        mapView = findViewById(R.id.map_view);
-        //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState),创建地图
-        mapView.onCreate(savedInstanceState);
         //初始化定位
         try {
             initLocation();
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //初始化地图
+        initMap(savedInstanceState);
         //检查Android版本
         checkingAndroidVersion();
     }
@@ -156,11 +160,15 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
             if (aMapLocation.getErrorCode() == 0) {
                 //地址
                 String address = aMapLocation.getAddress();
-                Log.d("MainActivity",address);
+                Log.d("MainActivity", address);
                 showMsg(address);
 
                 //停止定位后,本地定位服务不会被销毁
                 mLocationClient.stopLocation();
+
+                if (mListener != null) {
+                    mListener.onLocationChanged(aMapLocation);
+                }
             } else {
                 //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 Log.e("AmapError", "location Error, ErrCode:"
@@ -176,17 +184,60 @@ public class MainActivity extends AppCompatActivity implements AMapLocationListe
         //在activity执行onResume时执行mMapView.onResume ()，重新绘制加载地图
         mapView.onResume();
     }
+
     @Override
     protected void onPause() {
         super.onPause();
         //在activity执行onPause时执行mMapView.onPause ()，暂停地图的绘制
         mapView.onPause();
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //在activity执行onSaveInstanceState时执行mMapView.onSaveInstanceState (outState)，保存地图当前的状态
         mapView.onSaveInstanceState(outState);
     }
-    
+
+    /**
+     * 初始化地图
+     *
+     * @param savedInstanceState
+     */
+    private void initMap(Bundle savedInstanceState) {
+        mapView = findViewById(R.id.map_view);
+        //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图
+        mapView.onCreate(savedInstanceState);
+        //初始化地图控制器对象
+        aMap = mapView.getMap();
+
+        // 设置定位监听
+        aMap.setLocationSource(this);
+        // 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        aMap.setMyLocationEnabled(true);
+    }
+
+    /**
+     * 激活定位
+     */
+    @Override
+    public void activate(OnLocationChangedListener onLocationChangedListener) {
+        mListener = onLocationChangedListener;
+        if (mLocationClient == null) {
+            mLocationClient.startLocation();//启动定位
+        }
+    }
+
+    /**
+     * 停止定位
+     */
+    @Override
+    public void deactivate() {
+        mListener = null;
+        if (mLocationClient != null) {
+            mLocationClient.stopLocation();
+            mLocationClient.onDestroy();
+        }
+        mLocationClient = null;
+    }
 }
