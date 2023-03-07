@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/location_button"
+        style="@style/roundbutton"
+        android:layout_width="48dp"
+        android:layout_marginStart="350dp"
+        android:layout_marginTop="600dp"
+        android:background="@drawable/top_button_shap"
+        android:foreground="@drawable/location"
+        android:minHeight="48dp"
+        android:onClick="location"
+        android:text="1"
+        tools:ignore="UsingOnClickInXml" />
+
+
+    <com.amap.api.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/top_button_shap">
+
+        <ImageButton
+            android:id="@+id/clean_keywords"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/top_button_shap"
+            android:src="@mipmap/ic_close"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/main_keywords"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/clean_keywords"
+            android:background="@drawable/top_button_shap"
+
+            android:clickable="true"
+            android:completionThreshold="1"
+            android:drawableLeft="@mipmap/ic_search"
+            android:dropDownVerticalOffset="1.0dip"
+            android:gravity="center_vertical"
+            android:hint="关键字搜索"
+            android:imeOptions="actionDone"
+            android:inputType="text|textAutoComplete"
+            android:maxLength="20"
+            android:paddingLeft="10dp"
+            android:singleLine="true"
+            android:textColor="#000000"
+            android:textColorHint="@color/text_hint"
+            android:textSize="16.0sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="380dp"
+        android:layout_height="154dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="700dp"
+        android:background="@drawable/top_button_shap">
+
+        <ImageButton
+            android:id="@+id/goButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/top_button_shap"
+            android:scaleType="center"
+            android:src="@mipmap/ic_arrow_back"
+            android:visibility="gone"/>
+
+    </RelativeLayout>
+</RelativeLayout>
