@@ -11,40 +11,27 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.example.gaodemapdemo.ble.BLEManager;
 import com.example.gaodemapdemo.ble.OnBleConnectListener;
 import com.example.gaodemapdemo.ble.OnDeviceSearchListener;
-import com.example.gaodemapdemo.permission.PermissionListener;
-import com.example.gaodemapdemo.permission.PermissionRequest;
 import com.example.gaodemapdemo.util.ToastUtil;
 import com.example.gaodemapdemo.util.TypeConversion;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-import pub.devrel.easypermissions.EasyPermissions;
-
-
-@RequiresApi(api = Build.VERSION_CODES.S)
-public class BlueToothActivity extends AppCompatActivity {
+public class Helmet {
     private static final String TAG = "BLEMain";
     //请求权限码
-    private static final int REQUEST_PERMISSIONS = 9527;
+//    private static final int REQUEST_PERMISSIONS = 9527;
 
     private static final int CONNECT_SUCCESS = 0x01;
     private static final int CONNECT_FAILURE = 0x02;
@@ -67,48 +54,23 @@ public class BlueToothActivity extends AppCompatActivity {
     public static final String WRITE_UUID = "e95d93ee-251d-470a-a062-fa1922dfa9a8";  //写特征
     public static final String HELMET_NAME = "Helmet";
     public static final String HELMET_ADDRESS = "B8:27:EB:20:49:54";
-    //动态申请权限
-    private String[] requestPermissionArray = new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
-    // 声明一个集合，在后面的代码中用来存储用户拒绝授权的权限
-    private List<String> deniedPermissionList = new ArrayList<>();
-    private List<String> mPermissionList = new ArrayList<>();
 
     private Context mContext;
-    private BLEManager bleManager;
+    BLEManager bleManager;
     private BluetoothDevice curBluetoothDevice;  //当前连接的设备
-    private BLEBroadcastReceiver bleBroadcastReceiver;
+    BLEBroadcastReceiver bleBroadcastReceiver;
     //当前设备连接状态
-    private boolean curConnState = false;
+    boolean curConnState = false;
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_blue_tooth);
-
-        mContext = BlueToothActivity.this;
-
-        //动态申请权限（Android 6.0）
+    protected void init() {
         //初始化数据
         initData();
         //注册广播
         initBLEBroadcastReceiver();
-        //初始化权限
-        initPermissions();
-        //扫描蓝牙设备
-        searchBtDevice();
-
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        //注销广播接收
-        unregisterReceiver(bleBroadcastReceiver);
+    public void setContext(Context context_) {
+        mContext = context_;
     }
 
     /**
@@ -128,63 +90,6 @@ public class BlueToothActivity extends AppCompatActivity {
         }
     }
 
-    //    /**
-//     * 初始化权限
-//     */
-//    private void initPermissions() {
-//        //Android 6.0以上动态申请权限
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (EasyPermissions.hasPermissions(this, requestPermissionArray)) {
-//                Log.d(TAG,"拥有全部权限");
-//            } else {
-//                //false 无权限
-//                EasyPermissions.requestPermissions(this, "需要权限", REQUEST_PERMISSIONS, requestPermissionArray);
-//            }
-//        }
-//    }
-    // 动态申请权限
-    private void initPermissions() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // Android 版本大于等于 Android12 时
-            // 只包括蓝牙这部分的权限，其余的需要什么权限自己添加
-            mPermissionList.add(Manifest.permission.BLUETOOTH_SCAN);
-            mPermissionList.add(Manifest.permission.BLUETOOTH_ADVERTISE);
-            mPermissionList.add(Manifest.permission.BLUETOOTH_CONNECT);
-        } else {
-            // Android 版本小于 Android12 及以下版本
-            mPermissionList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-            mPermissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-
-        if (mPermissionList.size() > 0) {
-            ActivityCompat.requestPermissions(this, mPermissionList.toArray(new String[0]), 1001);
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        // 有权限没有通过
-        boolean hasPermissionDismiss = false;
-        if (1001 == requestCode) {
-            for (int i = 0; i < grantResults.length; i++) {
-                if (grantResults[i] == -1) {
-                    hasPermissionDismiss = true;
-                    break;
-                }
-            }
-        }
-        if (hasPermissionDismiss) {
-            // 有权限未通过的处理
-            Log.d(TAG, "有权限未通过");
-        } else {
-            //权限全部通过的处理
-            Log.d(TAG, "权限全部通过");
-        }
-    }
-
     /**
      * 注册广播
      */
@@ -195,7 +100,7 @@ public class BlueToothActivity extends AppCompatActivity {
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED); //开始扫描
         intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);//扫描结束
         intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);//手机蓝牙状态监听
-        registerReceiver(bleBroadcastReceiver, intentFilter);
+        mContext.registerReceiver(bleBroadcastReceiver, intentFilter);
     }
 
     @SuppressLint("HandlerLeak")
@@ -219,7 +124,7 @@ public class BlueToothActivity extends AppCompatActivity {
                     if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                         return;
                     }
-                    if (Objects.equals(bleDevice.getBluetoothDevice().getName(), HELMET_NAME)&& Objects.equals(bleDevice.getBluetoothDevice().getAddress(), HELMET_ADDRESS)) {
+                    if (Objects.equals(bleDevice.getBluetoothDevice().getName(), HELMET_NAME) && Objects.equals(bleDevice.getBluetoothDevice().getAddress(), HELMET_ADDRESS)) {
                         if (bleManager != null) {
                             bleManager.stopDiscoveryDevice();
                         }
@@ -255,10 +160,6 @@ public class BlueToothActivity extends AppCompatActivity {
                 case CONNECT_SUCCESS:  //连接成功
                     Log.d(TAG, "连接成功");
                     curConnState = true;
-                    String sendMsg = "wsj1234王世杰 左转";
-                    if (bleManager != null) {
-                        bleManager.sendMessage(sendMsg);  //以16进制字符串形式发送数据
-                    }
                     break;
 
                 case DISCONNECT_SUCCESS:
@@ -413,8 +314,8 @@ public class BlueToothActivity extends AppCompatActivity {
         }
     };
 
-    //////////////////////////////////  搜索设备  /////////////////////////////////////////////////
-    private void searchBtDevice() {
+    //////////////////////////////////  搜索设备  ///////////////////////////////////////////////
+    void searchBtDevice() {
         if (bleManager == null) {
             Log.d(TAG, "searchBtDevice()-->bleManager == null");
             return;
@@ -423,11 +324,6 @@ public class BlueToothActivity extends AppCompatActivity {
         if (bleManager.isDiscovery()) { //当前正在搜索设备...
             bleManager.stopDiscoveryDevice();
         }
-
-//        if (lvDevicesAdapter != null) {
-//            lvDevicesAdapter.clear();  //清空列表
-//        }
-
         //开始搜索
         bleManager.startDiscoveryDevice(onDeviceSearchListener, 15000);
     }

@@ -1,5 +1,7 @@
 package com.example.gaodemapdemo;
 
+import static com.example.gaodemapdemo.MainActivity.helmet;
+
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+
 import com.example.gaodemapdemo.util.Constants;
 import com.example.gaodemapdemo.util.ToastUtil;
 
@@ -147,8 +150,6 @@ public class SearchActivity extends FragmentActivity implements OnMarkerClickLis
     @AfterPermissionGranted(REQUEST_PERMISSIONS)
     private void requestPermission() {
         String[] permissions = {
-//                Manifest.permission.BLUETOOTH_CONNECT,
-//                Manifest.permission.BLUETOOTH_SCAN,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.READ_PHONE_STATE,
@@ -414,8 +415,6 @@ public class SearchActivity extends FragmentActivity implements OnMarkerClickLis
                 String address = aMapLocation.getAddress();
                 double latitude = aMapLocation.getLatitude();
                 double longitude = aMapLocation.getLongitude();
-                Log.d("latitude:", String.valueOf(latitude));
-                Log.d("longitude:", String.valueOf(longitude));
 
                 nowLng = new LatLng(latitude, longitude);
                 //停止定位后,本地定位服务不会被销毁

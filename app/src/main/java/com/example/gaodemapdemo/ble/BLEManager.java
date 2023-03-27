@@ -76,7 +76,6 @@ public class BLEManager {
 
     ////////////////////////////////////  扫描设备  ///////////////////////////////////////////////
     //扫描设备回调
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice bluetoothDevice, int rssi, byte[] bytes) {
@@ -114,24 +113,18 @@ public class BLEManager {
 
         this.onDeviceSearchListener = onDeviceSearchListener;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Log.d(TAG, "开始扫描设备");
-            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                Log.d(TAG,"没有权限");
-                return;
-            }
-            bluetooth4Adapter.startLeScan(leScanCallback);
-
-        } else {
+        Log.d(TAG, "开始扫描设备");
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG,"没有权限");
             return;
         }
+        bluetooth4Adapter.startLeScan(leScanCallback);
 
         //设定最长扫描时间
         mHandler.postDelayed(stopScanRunnable, scanTime);
     }
 
     private Runnable stopScanRunnable = new Runnable() {
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void run() {
             if (onDeviceSearchListener != null) {
@@ -147,7 +140,6 @@ public class BLEManager {
     /**
      * 停止扫描
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void stopDiscoveryDevice() {
         mHandler.removeCallbacks(stopScanRunnable);
 
@@ -425,7 +417,6 @@ public class BLEManager {
      * @param onBleConnectListener 蓝牙连接监听者
      * @return
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public BluetoothGatt connectBleDevice(Context context, BluetoothDevice bluetoothDevice, long outTime, String serviceUUID, String readUUID, String writeUUID, OnBleConnectListener onBleConnectListener) {
         if (bluetoothDevice == null) {
             Log.e(TAG, "connectBleDevice()-->bluetoothDevice == null");
@@ -471,7 +462,6 @@ public class BLEManager {
 
     //连接超时
     private Runnable connectOutTimeRunnable = new Runnable() {
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void run() {
             if (mBluetoothGatt == null) {
@@ -495,7 +485,6 @@ public class BLEManager {
 
     //发现服务超时
     private Runnable serviceDiscoverOutTimeRunnable = new Runnable() {
-        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void run() {
             if (mBluetoothGatt == null) {
@@ -527,7 +516,6 @@ public class BLEManager {
      * @param writeUUID
      * @return
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private boolean setupService(BluetoothGatt bluetoothGatt, String serviceUUID, String readUUID, String writeUUID) {
         if (bluetoothGatt == null) {
             Log.e(TAG, "setupService()-->bluetoothGatt == null");
@@ -609,7 +597,6 @@ public class BLEManager {
      * @param gatt           连接
      * @param characteristic 特征
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void enableNotification(boolean enable, BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         if (gatt == null) {
             Log.e(TAG, "enableNotification-->gatt == null");
@@ -636,7 +623,6 @@ public class BLEManager {
      * @param msg 消息
      * @return true  false
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public boolean sendMessage(String msg) {
         if (writeCharacteristic == null) {
             Log.e(TAG, "sendMessage(byte[])-->writeGattCharacteristic == null");
@@ -664,7 +650,6 @@ public class BLEManager {
     /**
      * 断开连接
      */
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void disConnectDevice() {
         if (mBluetoothGatt == null) {
             Log.e(TAG, "disConnectDevice-->bluetoothGatt == null");
@@ -689,20 +674,17 @@ public class BLEManager {
      * @return true--支持4.0  false--不支持4.0
      */
     private boolean checkBle(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {  //API 18 Android 4.3
-            bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-            if (bluetoothManager == null) {
-                return false;
-            }
-            bluetooth4Adapter = bluetoothManager.getAdapter();  //BLUETOOTH权限
-            if (bluetooth4Adapter == null) {
-                return false;
-            } else {
-                Log.d(TAG, "该设备支持蓝牙4.0");
-                return true;
-            }
-        } else {
+        //API 18 Android 4.3
+        bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        if (bluetoothManager == null) {
             return false;
+        }
+        bluetooth4Adapter = bluetoothManager.getAdapter();  //BLUETOOTH权限
+        if (bluetooth4Adapter == null) {
+            return false;
+        } else {
+            Log.d(TAG, "该设备支持蓝牙4.0");
+            return true;
         }
     }
 

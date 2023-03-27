@@ -9,7 +9,7 @@
         android:id="@+id/location_button"
         style="@style/roundbutton"
         android:layout_width="48dp"
-        android:layout_marginStart="350dp"
+        android:layout_marginStart="330dp"
         android:layout_marginTop="600dp"
         android:background="@drawable/top_button_shap"
         android:foreground="@drawable/location"

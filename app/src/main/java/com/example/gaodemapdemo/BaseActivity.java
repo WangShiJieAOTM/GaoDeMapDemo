@@ -1,5 +1,7 @@
 package com.example.gaodemapdemo;
 
+import static com.example.gaodemapdemo.MainActivity.helmet;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,13 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
 
     protected AMapNaviView mAMapNaviView;
     protected AMapNavi mAMapNavi;
+    public String navi_retainTime;
+    public String navi_retainDistance;
+    public String navi_roadName;
+    public String navi_iconType;
+    public String navi_distance;
+    public String navi_speed;
+    public String navi_text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,12 +108,14 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
     public void onLocationChange(AMapNaviLocation location) {
         //当前位置回调
         //Log.d("Speed:", String.valueOf(location.getSpeed()));
+        navi_speed = String.valueOf(location.getSpeed());
     }
 
     @Override
     public void onGetNavigationText(int type, String text) {
         //播报类型和播报文字回调
         Log.d("text:", text);
+        navi_text = text;
     }
 
     @Override
@@ -191,11 +202,31 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
 
     @Override
     public void onNaviInfoUpdate(NaviInfo naviinfo) {
+        navi_distance = String.valueOf(naviinfo.getCurStepRetainDistance());
+        navi_roadName = naviinfo.getCurrentRoadName();
+        navi_iconType = String.valueOf(naviinfo.getIconType());
+        navi_retainTime = String.valueOf(naviinfo.getPathRetainTime());
+        navi_retainDistance = String.valueOf(naviinfo.getPathRetainDistance());
         //导航过程中的信息更新，请看NaviInfo的具体说明
-        Log.d("RoadName:", naviinfo.getCurrentRoadName());
-        Log.d("NextRoadName:", naviinfo.getNextRoadName());
-        Log.d("Type:", String.valueOf(naviinfo.getIconType()));
-        Log.d("Distance:", String.valueOf(naviinfo.getCurStepRetainDistance()));
+        Log.d("RetainTime:", navi_retainTime);
+        Log.d("RetainDistance:", navi_retainDistance);
+        Log.d("NextRoadName:", navi_roadName);
+        Log.d("Type:", navi_iconType);
+        Log.d("Distance:", navi_distance);
+        Log.d("Speed:", navi_speed);
+        Log.d("Text:", navi_text);
+        if (helmet.curConnState) {
+            String sendMsg = navi_retainTime +
+                    "," + navi_retainDistance +
+                    "," + navi_roadName +
+                    "," + navi_iconType +
+                    "," + navi_distance +
+                    "," + navi_speed +
+                    "," + navi_text;
+            if (helmet.bleManager != null) {
+                helmet.bleManager.sendMessage(sendMsg);  //以16进制字符串形式发送数据
+            }
+        }
     }
 
     @Override
