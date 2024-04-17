@@ -160,6 +160,7 @@ public class Helmet {
                 case CONNECT_SUCCESS:  //连接成功
                     Log.d(TAG, "连接成功");
                     curConnState = true;
+                    ToastUtil.show(mContext, "头盔设备已连接,可以开始连接");
                     break;
 
                 case DISCONNECT_SUCCESS:

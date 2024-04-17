@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.example.gaodemapdemo"
         minSdk 21
-        targetSdk 33
+        targetSdk 29
         versionCode 1
         versionName "1.0"
 
@@ -32,7 +32,7 @@ android {
         abi {
             enable true
             reset()
-            include 'arm64-v8a'//, 'x86_64'//只打包armeabi平台的，就算有其他文件夹也不管
+            include 'armeabi'//, 'x86_64'//只打包armeabi平台的，就算有其他文件夹也不管
 //            include 'armeabi'//, 'armeabi-v7a', 'arm64-v8a', 'mips', 'x86', 'x86_64'
         }
     }
@@ -56,6 +56,8 @@ dependencies {
     //Google推荐的EasyPermission库
     implementation 'pub.devrel:easypermissions:3.0.0'
     implementation 'com.github.Jasonchenlijian:FastBle:2.4.0'
+    implementation 'androidx.navigation:navigation-fragment:2.5.3'
+    implementation 'androidx.navigation:navigation-ui:2.5.3'
 //    implementation 'no.nordicsemi.android:ble:2.6.0-alpha04'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'

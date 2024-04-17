@@ -59,13 +59,13 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
     @Override
     protected void onResume() {
         super.onResume();
-        mAMapNaviView.onResume();
+//        mAMapNaviView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mAMapNaviView.onPause();
+//        mAMapNaviView.onPause();
 
 //
 //        停止导航之后，会触及底层stop，然后就不会再有回调了，但是讯飞当前还是没有说完的半句话还是会说完
@@ -75,7 +75,7 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mAMapNaviView.onDestroy();
+//        mAMapNaviView.onDestroy();
         //since 1.6.0 不再在naviview destroy的时候自动执行AMapNavi.stopNavi();请自行执行
         if (mAMapNavi != null) {
             mAMapNavi.stopNavi();

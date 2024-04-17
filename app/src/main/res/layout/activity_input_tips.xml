@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey"
+    android:background="@color/blue"
     android:orientation="vertical"
     android:padding="5dp"
     tools:context="com.example.gaodemapdemo.InputTipsActivity">
@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/white"
+        android:background="@color/blue"
         android:orientation="horizontal">
 
         <ImageButton
@@ -35,18 +35,13 @@
             android:imeOptions="actionSearch"
             android:inputType="textCapWords"
             android:singleLine="true"
-            android:textColor="@color/black"
-            android:textColorHint="@color/black"
-            app:queryHint="请输入关键字"
-            app:searchIcon="@null" />
+            app:queryHint="请输入关键字" />
     </LinearLayout>
 
     <ListView
         android:id="@+id/inputtip_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp">
-
-    </ListView>
+        android:layout_marginTop="5dp"></ListView>
 
 </LinearLayout>

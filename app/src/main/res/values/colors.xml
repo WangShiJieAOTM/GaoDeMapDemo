@@ -10,4 +10,5 @@
     <color name="text_hint">#6C6C6C</color>
     <color name="grey"> #ebebeb</color>
     <color name="transparent_50">#FFFFFF</color>
+    <color name="blue">#1296db</color>
 </resources>

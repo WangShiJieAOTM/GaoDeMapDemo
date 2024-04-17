@@ -73,7 +73,6 @@ public class BLEManager {
             return true;
         }
     }
-
     ////////////////////////////////////  扫描设备  ///////////////////////////////////////////////
     //扫描设备回调
     private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {

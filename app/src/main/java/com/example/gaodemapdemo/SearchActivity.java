@@ -361,12 +361,12 @@ public class SearchActivity extends FragmentActivity implements OnMarkerClickLis
                 mCleanKeyWords.setVisibility(View.GONE);
                 break;
             case R.id.goButton:
-                Intent navi_intent = new Intent(this, NaviActivity.class);
-                navi_intent.putExtra("startLatitude", nowLng.latitude);
-                navi_intent.putExtra("startLongitude", nowLng.longitude);
-                navi_intent.putExtra("endLatitude", endLng.latitude);
-                navi_intent.putExtra("endLongitude", endLng.longitude);
-                startActivity(navi_intent);
+//                Intent navi_intent = new Intent(this, NaviActivity.class);
+//                navi_intent.putExtra("startLatitude", nowLng.latitude);
+//                navi_intent.putExtra("startLongitude", nowLng.longitude);
+//                navi_intent.putExtra("endLatitude", endLng.latitude);
+//                navi_intent.putExtra("endLongitude", endLng.longitude);
+//                startActivity(navi_intent);
                 goLayout.setVisibility(View.INVISIBLE);
                 break;
             default:
